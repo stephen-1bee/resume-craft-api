@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const templateSchema = new mongoose.Schema({
-  user_id: {
-    type: String,
-    require: true,
-    default: null,
-  },
+  // user_id: {
+  //   type: String,
+  //   require: true,
+  //   default: null,
+  // },
   hasPhoto: {
     type: Boolean,
     require: true,
