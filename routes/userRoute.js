@@ -50,7 +50,7 @@ router.get("/all", async (req, res) => {
       .json({ msg: "success", user_count: all_users.length, all_users });
   } catch (err) {
     console.log(err);
-    res.statusCode(500).json({ msg: "internal server error" });
+    res.status(500).json({ msg: "internal server error" });
   }
 });
 
@@ -108,7 +108,7 @@ router.put("/update/:id", async (req, res) => {
         first_name,
         last_name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
       }
     );
 
