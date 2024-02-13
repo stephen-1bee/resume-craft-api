@@ -17,7 +17,7 @@ router.post("/create", async (req, res) => {
     });
 
     if (doesExist) {
-      return res.status(400).json({ msg: "user already exists" });
+      return res.status(400).json({ msg: "user already exist" });
     }
 
     const newUser = new userSchema({
