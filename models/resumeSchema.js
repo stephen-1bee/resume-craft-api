@@ -73,7 +73,7 @@ const resumeSchema = new mongoose.Schema({
     default: null,
   },
   template_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     require: true,
     default: null,
   },

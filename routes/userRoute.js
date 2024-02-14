@@ -41,6 +41,31 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ msg: `${email} does not exist` });
+    }
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+
+    if (!checkPassword) {
+      return res.status(401).json({ msg: "incorrect password" });
+    }
+
+    res
+      .status(200)
+      .json({ msg: `welcome ${email}, you have successfully logged in`, user });
+  } catch (err) {
+    console.log(err);
+    resstatus(500).json({ msg: "internal server error" });
+  }
+});
+
 router.get("/all", async (req, res) => {
   try {
     const all_users = await userSchema.find();
@@ -64,7 +89,9 @@ router.get("/one/:id", async (req, res) => {
 
     const user = await userSchema.findOne({ _id: userId });
 
-    res.status(200).json({ msg: "success", user });
+    return user
+      ? res.status(200).json({ msg: "success", user })
+      : res.status(404).json({ msg: "failed to find single user" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: "internal server error" });

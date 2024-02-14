@@ -12,7 +12,7 @@ const templateSchema = new mongoose.Schema({
     default: false,
   },
   resume_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     require: true,
     default: null,
   },

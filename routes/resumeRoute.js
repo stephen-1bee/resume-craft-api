@@ -115,7 +115,7 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", upload.single("photo"), async (req, res) => {
   try {
     const resumeId = req.params.id;
 
@@ -123,8 +123,10 @@ router.put("/update/:id", async (req, res) => {
       return res.status(400).json({ msg: "resume id not found" });
     }
 
+    const resume = await resumeSchema.findOne({ _id: resumeId });
+    const currentPhoto = resume.photo;
+
     const {
-      photo,
       user_id,
       first_name,
       last_name,
@@ -141,10 +143,15 @@ router.put("/update/:id", async (req, res) => {
       template_id,
     } = req.body;
 
-    const resume = await resumeSchema.updateOne(
+    const updatedPhoto = (await cloudinary.uploader.upload(req.file.path))
+      .secure_url;
+
+    const finalPhoto = req.file ? updatedPhoto : currentPhoto;
+
+    const update_resume = await resumeSchema.updateOne(
       { _id: resumeId },
       {
-        photo,
+        photo: finalPhoto,
         user_id,
         first_name,
         last_name,
@@ -162,7 +169,7 @@ router.put("/update/:id", async (req, res) => {
       }
     );
 
-    return resume.modifiedCount === 1
+    return update_resume.modifiedCount === 1
       ? res.status(200).json({ msg: "resume updated successfully", resume })
       : res.status(404).json({ msg: "fialed to updated resume" });
   } catch (err) {
@@ -185,14 +192,14 @@ router.get("/user/:id", async (req, res) => {
           user_id: userId,
         },
       },
-      //   {
-      //     $lookup: {
-      //       from: "users",
-      //       localField: "user_id",
-      //       foreignField: "_id",
-      //       as: "user_resume",
-      //     },
-      //   },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user_resume",
+        },
+      },
     ]);
 
     return user_resume
@@ -209,27 +216,27 @@ router.get("/template/:id", async (req, res) => {
     const templateId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(templateId)) {
-      return res.status(400).json({ msg: "user id not found" });
+      return res.status(400).json({ msg: "template id not found" });
     }
 
-    const template_resume = await resumeSchema.aggregate([
+    const resume = await resumeSchema.aggregate([
       {
         $match: {
           template_id: templateId,
         },
       },
-      //   {
-      //     $lookup: {
-      //       from: "users",
-      //       localField: "user_id",
-      //       foreignField: "_id",
-      //       as: "user_resume",
-      //     },
-      //   },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "resume_template",
+        },
+      },
     ]);
 
-    return template_resume
-      ? res.status(200).json({ msg: "success", user_resume: template_resume })
+    return resume
+      ? res.status(200).json({ msg: "success", resume })
       : res.status(404).json({ msg: "failed to get template's resume" });
   } catch (err) {
     console.log(err);

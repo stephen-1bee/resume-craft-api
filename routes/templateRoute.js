@@ -127,11 +127,27 @@ router.get("/resume/:id", async (req, res) => {
       res.status(400).json({ msg: "resume id not found" });
     }
 
-    const template_module = await templateSchema.find({
-      resume_id: resumeId,
-    });
+    // const template_resume = await templateSchema.find({
+    //   resume_id: resumeId,
+    // });
 
-    res.status(200).json({ msg: "success", template_module });
+    const template = await templateSchema.aggregate([
+      {
+        $match: {
+          resume_id: resumeId,
+        },
+      },
+      {
+        $lookup: {
+          from: "resumes",
+          localField: "resume_id",
+          foreignField: "_id",
+          as: "resume_template",
+        },
+      },
+    ]);
+
+    res.status(200).json({ msg: "success", template });
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: "internal server error" });
