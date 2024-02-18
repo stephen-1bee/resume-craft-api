@@ -31,7 +31,7 @@ router.post("/create", async (req, res) => {
 
     return saved_user
       ? res.status(200).json({
-          msg: `Welcome you have successfully created your account`,
+          msg: `Welcome , you have successfully created your account`,
           saved_user,
         })
       : res.status(404).json({ msg: "failed to create user" });
@@ -59,7 +59,7 @@ router.post("/login", async (req, res) => {
 
     res
       .status(200)
-      .json({ msg: `welcome ${email}, you have successfully logged in`, user });
+      .json({ msg: `Welcome , you have successfully logged in`, user });
   } catch (err) {
     console.log(err);
     resstatus(500).json({ msg: "internal server error" });
