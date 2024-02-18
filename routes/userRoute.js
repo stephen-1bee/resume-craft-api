@@ -31,7 +31,7 @@ router.post("/create", async (req, res) => {
 
     return saved_user
       ? res.status(200).json({
-          msg: `Welcome ${email} you have successfully created your account`,
+          msg: `Welcome you have successfully created your account`,
           saved_user,
         })
       : res.status(404).json({ msg: "failed to create user" });
