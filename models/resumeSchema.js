@@ -7,8 +7,8 @@ const resumeSchema = new mongoose.Schema({
     default: null,
   },
   user_id: {
-    // type: mongoose.Schema.Types.ObjectId,
-    type: String,
+    type: mongoose.Types.ObjectId,
+    // type: String,
     require: true,
     default: null,
   },

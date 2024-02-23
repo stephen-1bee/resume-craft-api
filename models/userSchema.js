@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   resume_id: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     require: true,
     default: null,
   },

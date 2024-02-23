@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 
 router.post("/create", async (req, res) => {
   try {
-    const { first_name, last_name, email, password } = req.body;
+    const { first_name, last_name, email, password, resume_id } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -24,6 +24,7 @@ router.post("/create", async (req, res) => {
       first_name,
       last_name,
       email,
+      resume_id,
       password: hashedPassword,
     });
 
@@ -87,7 +88,21 @@ router.get("/one/:id", async (req, res) => {
       return res.status(400).json({ msg: "user id not found" });
     }
 
-    const user = await userSchema.findOne({ _id: userId });
+    const user = await userSchema.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "resumes",
+          localField: "resume_id",
+          foreignField: "_id",
+          as: "resume",
+        },
+      },
+    ]);
 
     return user
       ? res.status(200).json({ msg: "success", user })
