@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
     require: true,
     default: null,
   },
+  confirm_password: {
+    type: String,
+    require: true,
+    default: null,
+  },
   resume_id: {
     type: mongoose.Types.ObjectId,
     require: true,

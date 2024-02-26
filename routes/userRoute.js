@@ -14,6 +14,7 @@ router.post("/create", async (req, res) => {
       first_name,
       last_name,
       email,
+      password,
     });
 
     if (doesExist) {
@@ -166,27 +167,34 @@ router.put("/update/:id", async (req, res) => {
 // recover email
 router.post("/recovery", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, confirm_password } = req.body;
 
     const user = await userSchema.findOne({ email });
 
+    if (password !== confirm_password) {
+      return res.status(400).json({ msg: "password do not match" });
+    }
+
     if (!user) {
-      return res.status(400).json({ msg: "user not verified" });
+      return res
+        .status(400)
+        .json({ msg: `${email} email is not a valid user` });
     }
 
     const currentUser = user.id;
 
-    const updateUserPassword = await userSchema.findByIdAndUpdate(currentUser, {
-      password,
-    });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (updateUserPassword) {
-      res.json({ msg: "password recovered successfully" });
+    const updateUserPassword = await userSchema.updateOne(
+      { _id: currentUser },
+      { $set: { password: hashedPassword } }
+    );
+
+    if (updateUserPassword.modifiedCount === 1) {
+      res.json({ msg: "password recovered successfully", updateUserPassword });
     } else {
-      res.json({ msg: "user not available" });
+      res.json({ msg: "failed to recover password" });
     }
-
-    // const userId = req.params.id;
   } catch (err) {
     console.log(err);
     res.status(500).json({ msg: "internal server error" });
