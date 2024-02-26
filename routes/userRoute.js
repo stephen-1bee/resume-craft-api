@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 
 router.post("/create", async (req, res) => {
   try {
-    const { first_name, last_name, email, password, resume_id } = req.body;
+    const { first_name, last_name, email, resume_id, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
