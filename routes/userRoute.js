@@ -163,4 +163,34 @@ router.put("/update/:id", async (req, res) => {
   }
 });
 
+// recover email
+router.post("/recovery", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ msg: "user not verified" });
+    }
+
+    const currentUser = user.id;
+
+    const updateUserPassword = await userSchema.findByIdAndUpdate(currentUser, {
+      password,
+    });
+
+    if (updateUserPassword) {
+      res.json({ msg: "password recovered successfully" });
+    } else {
+      res.json({ msg: "user not available" });
+    }
+
+    // const userId = req.params.id;
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "internal server error" });
+  }
+});
+
 module.exports = router;

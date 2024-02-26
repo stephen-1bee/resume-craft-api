@@ -8,7 +8,6 @@ const resumeSchema = new mongoose.Schema({
   },
   user_id: {
     type: mongoose.Types.ObjectId,
-    // type: String,
     require: true,
     default: null,
   },
