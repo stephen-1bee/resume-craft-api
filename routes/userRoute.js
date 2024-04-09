@@ -29,7 +29,7 @@ router.post(
 
       if (errors.isEmpty()) {
         const error = errors.array().map((err) => err.msg)
-        res.status(401).json({ msg: error[0] })
+        return res.status(401).json({ msg: error[0] })
       }
 
       const doesExist = await userSchema.findOne({
