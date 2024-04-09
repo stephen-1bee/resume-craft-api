@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const resumeSchema = new mongoose.Schema({
   photo: {
@@ -47,27 +47,27 @@ const resumeSchema = new mongoose.Schema({
     default: null,
   },
   previous_work: {
-    type: Array,
+    type: [String],
     require: true,
     default: null,
   },
   current_work: {
-    type: Array,
+    type: [String],
     require: true,
     default: null,
   },
   skills: {
-    type: Array,
+    type: [String],
     require: true,
     default: null,
   },
   reference: {
-    type: Array,
+    type: [String],
     require: true,
     default: null,
   },
   language: {
-    type: Array,
+    type: [String],
     require: true,
     default: null,
   },
@@ -86,6 +86,6 @@ const resumeSchema = new mongoose.Schema({
     require: true,
     default: new Date(),
   },
-});
+})
 
-module.exports = mongoose.model("resumeSchema", resumeSchema, "resumes");
+module.exports = mongoose.model("resumeSchema", resumeSchema, "resumes")

@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const mongoose = require("mongoose");
-const resumeSchema = require("../models/resumeSchema");
-const cloudinary = require("../utilities/cloudinary");
-const upload = require("../middleware/multer");
+const express = require("express")
+const router = express.Router()
+const mongoose = require("mongoose")
+const resumeSchema = require("../models/resumeSchema")
+const cloudinary = require("../utilities/cloudinary")
+const upload = require("../middleware/multer")
 
 router.post("/create", upload.single("photo"), async (req, res) => {
   try {
@@ -22,12 +22,12 @@ router.post("/create", upload.single("photo"), async (req, res) => {
       reference,
       language,
       template_id,
-    } = req.body;
+    } = req.body
 
-    let photo;
+    let photo
 
     if (req.file) {
-      photo = (await cloudinary.uploader.upload(req.file.path)).secure_url;
+      photo = (await cloudinary.uploader.upload(req.file.path)).secure_url
     }
 
     //   const resumeExist = await resumeSchema.findOne({})
@@ -48,83 +48,83 @@ router.post("/create", upload.single("photo"), async (req, res) => {
       reference,
       language,
       template_id,
-    });
+    })
 
-    const saved_resume = await newResume.save();
+    const saved_resume = await newResume.save()
 
     return saved_resume
       ? res
           .status(200)
           .json({ msg: "resume created succesfully", saved_resume })
-      : res.status(404).json({ msg: "fialed to create resume" });
+      : res.status(404).json({ msg: "fialed to create resume" })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
 router.get("/all", async (req, res) => {
   try {
-    const all_resume = await resumeSchema.find().sort({ dateCreated: -1 });
+    const all_resume = await resumeSchema.find().sort({ dateCreated: -1 })
 
     res.status(200).json({
       msg: "success",
       resume_count: all_resume.length,
       all_resume,
-    });
+    })
   } catch (err) {
-    console.log(err);
-    res.statusCode(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.statusCode(500).json({ msg: "internal server error" })
   }
-});
+})
 
 // single resume
 router.get("/one/:id", async (req, res) => {
   try {
-    const resumeId = req.params.id;
+    const resumeId = req.params.id
 
     if (!resumeId) {
-      return res.status(400).json({ msg: "resume id not found" });
+      return res.status(400).json({ msg: "resume id not found" })
     }
 
-    const resume = await resumeSchema.findOne({ _id: resumeId });
+    const resume = await resumeSchema.findOne({ _id: resumeId })
 
-    res.status(200).json({ msg: "success", user: resume });
+    res.status(200).json({ msg: "success", user: resume })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
 router.delete("/delete/:id", async (req, res) => {
   try {
-    const resumeId = req.params.id;
+    const resumeId = req.params.id
 
     if (!mongoose.Types.ObjectId.isValid(resumeId)) {
-      res.status(400).json({ msg: "user id not found" });
+      res.status(400).json({ msg: "user id not found" })
     }
 
-    const resume = await resumeSchema.findByIdAndDelete(resumeId);
+    const resume = await resumeSchema.findByIdAndDelete(resumeId)
 
     return resume
       ? res.status(200).json({ msg: "resumer deleted successfully", resume })
-      : res.status(500).json({ msg: "failed to delete resumer" });
+      : res.status(500).json({ msg: "failed to delete resumer" })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
 router.put("/update/:id", upload.single("photo"), async (req, res) => {
   try {
-    const resumeId = req.params.id;
+    const resumeId = req.params.id
 
     if (!mongoose.Types.ObjectId.isValid(resumeId)) {
-      return res.status(400).json({ msg: "resume id not found" });
+      return res.status(400).json({ msg: "resume id not found" })
     }
 
-    const resume = await resumeSchema.findOne({ _id: resumeId });
-    const currentPhoto = resume.photo;
+    const resume = await resumeSchema.findOne({ _id: resumeId })
+    const currentPhoto = resume.photo
 
     const {
       user_id,
@@ -141,12 +141,12 @@ router.put("/update/:id", upload.single("photo"), async (req, res) => {
       reference,
       language,
       template_id,
-    } = req.body;
+    } = req.body
 
     const updatedPhoto = (await cloudinary.uploader.upload(req.file.path))
-      .secure_url;
+      .secure_url
 
-    const finalPhoto = req.file ? updatedPhoto : currentPhoto;
+    const finalPhoto = req.file ? updatedPhoto : currentPhoto
 
     const update_resume = await resumeSchema.updateOne(
       { _id: resumeId },
@@ -167,23 +167,23 @@ router.put("/update/:id", upload.single("photo"), async (req, res) => {
         language,
         template_id,
       }
-    );
+    )
 
     return update_resume.modifiedCount === 1
       ? res.status(200).json({ msg: "resume updated successfully", resume })
-      : res.status(404).json({ msg: "fialed to updated resume" });
+      : res.status(404).json({ msg: "fialed to updated resume" })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
 router.get("/user/:id", async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.id
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ msg: "user id not found" });
+      return res.status(400).json({ msg: "user id not found" })
     }
 
     const user_resume = await resumeSchema.aggregate([
@@ -200,23 +200,23 @@ router.get("/user/:id", async (req, res) => {
           as: "user_resume",
         },
       },
-    ]);
+    ])
 
     return user_resume
       ? res.status(200).json({ msg: "success", user_resume })
-      : res.status(404).json({ msg: "failed to get user's resume" });
+      : res.status(404).json({ msg: "failed to get user's resume" })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
 router.get("/template/:id", async (req, res) => {
   try {
-    const templateId = req.params.id;
+    const templateId = req.params.id
 
     if (!mongoose.Types.ObjectId.isValid(templateId)) {
-      return res.status(400).json({ msg: "template id not found" });
+      return res.status(400).json({ msg: "template id not found" })
     }
 
     const resume = await resumeSchema.aggregate([
@@ -233,15 +233,15 @@ router.get("/template/:id", async (req, res) => {
           as: "resume_template",
         },
       },
-    ]);
+    ])
 
     return resume
       ? res.status(200).json({ msg: "success", resume })
-      : res.status(404).json({ msg: "failed to get template's resume" });
+      : res.status(404).json({ msg: "failed to get template's resume" })
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "internal server error" });
+    console.log(err)
+    res.status(500).json({ msg: "internal server error" })
   }
-});
+})
 
-module.exports = router;
+module.exports = router
