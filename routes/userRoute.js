@@ -27,7 +27,7 @@ router.post(
 
       const hashedPassword = await bcrypt.hash(password, 10)
 
-      if (errors.isEmpty()) {
+      if (!errors.isEmpty()) {
         const error = errors.array().map((err) => err.msg)
         return res.status(401).json({ msg: error[0] })
       }
