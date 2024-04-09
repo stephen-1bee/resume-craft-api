@@ -29,14 +29,13 @@ router.post(
 
       if (errors.isEmpty()) {
         const error = errors.array().map((err) => err.msg)
-        res.status(402).json({ msg: error[0] })
+        res.status(401).json({ msg: error[0] })
       }
 
       const doesExist = await userSchema.findOne({
         first_name,
         last_name,
         email,
-        password,
       })
 
       if (doesExist) {
