@@ -4,64 +4,91 @@ const mongoose = require("mongoose")
 const resumeSchema = require("../models/resumeSchema")
 const cloudinary = require("../utilities/cloudinary")
 const upload = require("../middleware/multer")
+const { check, validationResult } = require("express-validator")
 
-router.post("/create", upload.single("photo"), async (req, res) => {
-  try {
-    const {
-      user_id,
-      first_name,
-      last_name,
-      email,
-      phone,
-      address,
-      level_of_education,
-      country,
-      previous_work,
-      current_work,
-      skills,
-      reference,
-      language,
-      template_id,
-    } = req.body
+router.post(
+  "/create",
+  [
+    check("email")
+      .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      .withMessage("Please provide a valid email format."),
+    check("phone").custom((value, { req }) => {
+      // Check if the phone number starts with 0 and has 10 digits
+      if (!value.match(/^0\d{9}$/)) {
+        throw new Error(
+          "Invalid phone number. Phone number should be 10 digits"
+        )
+      }
 
-    let photo
+      return true
+    }),
+  ],
+  upload.single("photo"),
+  async (req, res) => {
+    try {
+      const {
+        user_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        address,
+        level_of_education,
+        country,
+        previous_work,
+        current_work,
+        skills,
+        reference,
+        language,
+        template_id,
+      } = req.body
 
-    if (req.file) {
-      photo = (await cloudinary.uploader.upload(req.file.path)).secure_url
+      let photo
+
+      const errors = validationResult(req)
+
+      if (!errors.isEmpty()) {
+        const error = errors.array().map((err) => err.msg)
+        res.status(401).json({ msg: error[0] })
+      }
+
+      if (req.file) {
+        photo = (await cloudinary.uploader.upload(req.file.path)).secure_url
+      }
+
+      //   const resumeExist = await resumeSchema.findOne({})
+
+      const newResume = new resumeSchema({
+        photo,
+        user_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        address,
+        level_of_education,
+        country,
+        previous_work,
+        current_work,
+        skills,
+        reference,
+        language,
+        template_id,
+      })
+
+      const saved_resume = await newResume.save()
+
+      return saved_resume
+        ? res
+            .status(200)
+            .json({ msg: "resume created succesfully", saved_resume })
+        : res.status(404).json({ msg: "fialed to create resume" })
+    } catch (err) {
+      console.log(err)
+      res.status(500).json({ msg: "internal server error" })
     }
-
-    //   const resumeExist = await resumeSchema.findOne({})
-
-    const newResume = new resumeSchema({
-      photo,
-      user_id,
-      first_name,
-      last_name,
-      email,
-      phone,
-      address,
-      level_of_education,
-      country,
-      previous_work,
-      current_work,
-      skills,
-      reference,
-      language,
-      template_id,
-    })
-
-    const saved_resume = await newResume.save()
-
-    return saved_resume
-      ? res
-          .status(200)
-          .json({ msg: "resume created succesfully", saved_resume })
-      : res.status(404).json({ msg: "fialed to create resume" })
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ msg: "internal server error" })
   }
-})
+)
 
 router.get("/all", async (req, res) => {
   try {
