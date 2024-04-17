@@ -1,27 +1,29 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const morgan = require("morgan");
-const helmet = require("helmet");
-const app = express();
-const con = require("./utilities/db");
+const express = require("express")
+const dotenv = require("dotenv")
+const cors = require("cors")
+const morgan = require("morgan")
+const helmet = require("helmet")
+const app = express()
+const con = require("./utilities/db")
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
-app.use(morgan("dev"));
-app.use(helmet());
-dotenv.config();
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors({ origin: "*" }))
+app.use(morgan("dev"))
+app.use(helmet())
+dotenv.config()
 
-con();
+con()
 
-const userRoute = require("./routes/userRoute");
-const resumeRoute = require("./routes/resumeRoute");
-const templateRoute = require("./routes/templateRoute");
+app.use(express.static(`${__dirname}/image`))
 
-app.use("/api/v1/users", userRoute);
-app.use("/api/v1/resumes", resumeRoute);
-app.use("/api/v1/templates", templateRoute);
+const userRoute = require("./routes/userRoute")
+const resumeRoute = require("./routes/resumeRoute")
+const templateRoute = require("./routes/templateRoute")
 
-port = process.env.PORT;
-app.listen(port, () => console.log(`listening on port ${port}`));
+app.use("/api/v1/users", userRoute)
+app.use("/api/v1/resumes", resumeRoute)
+app.use("/api/v1/templates", templateRoute)
+
+port = process.env.PORT
+app.listen(port, () => console.log(`listening on port ${port}`))

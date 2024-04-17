@@ -41,18 +41,23 @@ const resumeSchema = new mongoose.Schema({
     require: true,
     default: null,
   },
+  year_of_experience: {
+    type: String,
+    require: true,
+    default: null,
+  },
   country: {
     type: String,
     require: true,
     default: null,
   },
   previous_work: {
-    type: [String],
+    type: String,
     require: true,
     default: null,
   },
   current_work: {
-    type: [String],
+    type: String,
     require: true,
     default: null,
   },
@@ -61,8 +66,53 @@ const resumeSchema = new mongoose.Schema({
     require: true,
     default: null,
   },
+  program_of_study: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  yearOfEducation: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  nameOfInstitutoion: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  company: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  role: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  year_of_experice: {
+    type: String,
+    require: true,
+    default: null,
+  },
   reference: {
-    type: [String],
+    type: String,
+    require: true,
+    default: null,
+  },
+  summary: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  year_of_experice: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  role: {
+    type: String,
     require: true,
     default: null,
   },

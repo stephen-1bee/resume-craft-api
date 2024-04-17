@@ -8,21 +8,21 @@ const { check, validationResult } = require("express-validator")
 
 router.post(
   "/create",
-  [
-    check("email")
-      .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-      .withMessage("Please provide a valid email format."),
-    check("phone").custom((value, { req }) => {
-      // Check if the phone number starts with 0 and has 10 digits
-      if (!value.match(/^0\d{9}$/)) {
-        throw new Error(
-          "Invalid phone number. Phone number should be 10 digits"
-        )
-      }
+  // [
+  //   check("email")
+  //     .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+  //     .withMessage("Please provide a valid email format."),
+  //   check("phone").custom((value, { req }) => {
+  //     // Check if the phone number starts with 0 and has 10 digits
+  //     if (!value.match(/^0\d{9}$/)) {
+  //       throw new Error(
+  //         "Invalid phone number. Phone number should be 10 digits"
+  //       )
+  //     }
 
-      return true
-    }),
-  ],
+  //     return true
+  //   }),
+  // ],
   upload.single("photo"),
   async (req, res) => {
     try {
@@ -32,7 +32,6 @@ router.post(
         last_name,
         email,
         phone,
-        address,
         level_of_education,
         country,
         previous_work,
@@ -40,6 +39,13 @@ router.post(
         skills,
         reference,
         language,
+        role,
+        company,
+        nameOfInstitutoion,
+        address,
+        yearOfEducation,
+        program_of_study,
+        year_of_experience,
         template_id,
       } = req.body
 
@@ -52,8 +58,12 @@ router.post(
         res.status(401).json({ msg: error[0] })
       }
 
+      // if (req.file) {
+      //   photo = (await cloudinary.uploader.upload(req.file.path)).secure_url
+      // }
+
       if (req.file) {
-        photo = (await cloudinary.uploader.upload(req.file.path)).secure_url
+        photo = req.file.filename
       }
 
       //   const resumeExist = await resumeSchema.findOne({})
@@ -65,7 +75,6 @@ router.post(
         last_name,
         email,
         phone,
-        address,
         level_of_education,
         country,
         previous_work,
@@ -73,6 +82,13 @@ router.post(
         skills,
         reference,
         language,
+        role,
+        company,
+        nameOfInstitutoion,
+        address,
+        yearOfEducation,
+        program_of_study,
+        year_of_experience,
         template_id,
       })
 
@@ -116,7 +132,7 @@ router.get("/one/:id", async (req, res) => {
 
     const resume = await resumeSchema.findOne({ _id: resumeId })
 
-    res.status(200).json({ msg: "success", user: resume })
+    res.status(200).json({ msg: "success", resume })
   } catch (err) {
     console.log(err)
     res.status(500).json({ msg: "internal server error" })
@@ -205,6 +221,7 @@ router.put("/update/:id", upload.single("photo"), async (req, res) => {
   }
 })
 
+// resume by user_id
 router.get("/user/:id", async (req, res) => {
   try {
     const userId = req.params.id
@@ -216,7 +233,7 @@ router.get("/user/:id", async (req, res) => {
     const user_resume = await resumeSchema.aggregate([
       {
         $match: {
-          user_id: userId,
+          user_id: new mongoose.Types.ObjectId(userId),
         },
       },
       {
@@ -224,7 +241,7 @@ router.get("/user/:id", async (req, res) => {
           from: "users",
           localField: "user_id",
           foreignField: "_id",
-          as: "user_resume",
+          as: "resume",
         },
       },
     ])

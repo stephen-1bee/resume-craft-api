@@ -120,8 +120,8 @@ router.get("/one/:id", async (req, res) => {
       {
         $lookup: {
           from: "resumes",
-          localField: "resume_id",
-          foreignField: "_id",
+          localField: "_id",
+          foreignField: "user_id",
           as: "resume",
         },
       },
@@ -163,9 +163,7 @@ router.put("/update/:id", async (req, res) => {
       res.status(400).json({ msg: "user id not found" })
     }
 
-    const { first_name, last_name, email, password } = req.body
-
-    const hashedPassword = await bcrypt.hash(password, 10)
+    const { first_name, last_name, email } = req.body
 
     const user = await userSchema.updateOne(
       { _id: userId },
@@ -173,7 +171,6 @@ router.put("/update/:id", async (req, res) => {
         first_name,
         last_name,
         email,
-        password: hashedPassword,
       }
     )
 
