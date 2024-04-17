@@ -36,11 +36,7 @@ const resumeSchema = new mongoose.Schema({
     require: true,
     default: null,
   },
-  level_of_education: {
-    type: String,
-    require: true,
-    default: null,
-  },
+
   year_of_experience: {
     type: String,
     require: true,

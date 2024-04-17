@@ -47,6 +47,7 @@ router.post(
         program_of_study,
         year_of_experience,
         template_id,
+        summary,
       } = req.body
 
       let photo
@@ -90,6 +91,7 @@ router.post(
         program_of_study,
         year_of_experience,
         template_id,
+        summary,
       })
 
       const saved_resume = await newResume.save()
@@ -176,7 +178,6 @@ router.put("/update/:id", upload.single("photo"), async (req, res) => {
       email,
       phone,
       address,
-      level_of_education,
       country,
       previous_work,
       current_work,
